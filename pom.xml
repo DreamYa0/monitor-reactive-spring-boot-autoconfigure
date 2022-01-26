@@ -58,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>io.zipkin.brave</groupId>
-            <artifactId>brave-instrumentation-dubbo</artifactId>
+            <artifactId>brave-instrumentation-dubbo-rpc</artifactId>
             <version>5.13.6</version>
         </dependency>
     </dependencies>
