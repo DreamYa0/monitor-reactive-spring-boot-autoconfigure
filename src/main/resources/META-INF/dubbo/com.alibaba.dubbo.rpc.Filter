@@ -1,0 +1,2 @@
+catTransaction=com.g7.framework.monitor.reactive.dubbo.CatTransaction
+appnameAppend=com.g7.framework.monitor.reactive.dubbo.AppNameAppendFilter
