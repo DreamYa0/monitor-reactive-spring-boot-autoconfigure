@@ -238,11 +238,14 @@ public class AsyncAppender extends ContextAwareBase
     private void queueLoggingEvent(ILoggingEvent evt) {
         if (null != delegate.get()) {
             processor.onNext(evt);
-            Mono.create(sink -> sink.success(evt)).doOnNext(event -> {
-                if (evt.getLevel().isGreaterOrEqual(Level.ERROR)) {
-                    logError(evt);
-                }
-            }).subscribeOn(SCHEDULER).subscribe();
+            Mono.just(evt)
+                    .publishOn(SCHEDULER)
+                    .doOnSuccess(event -> {
+                        if (evt.getLevel().isGreaterOrEqual(Level.ERROR)) {
+                            logError(evt);
+                        }
+                    })
+                    .subscribe();
 
         }
     }
