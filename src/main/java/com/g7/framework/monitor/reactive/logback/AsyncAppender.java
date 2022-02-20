@@ -56,7 +56,7 @@ public class AsyncAppender extends ContextAwareBase
     private int backlog = 1024 * 1024;
     private boolean includeCallerData = false;
     private boolean started = false;
-    private static final Scheduler SCHEDULER = Schedulers.parallel();
+    private static final Scheduler SCHEDULER = Schedulers.newParallel("async-appender-", 5);
 
     public int getBacklog() {
         return backlog;
