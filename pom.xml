@@ -86,6 +86,10 @@
             <version>1.0.1-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.projectreactor.addons</groupId>
+            <artifactId>reactor-extra</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
