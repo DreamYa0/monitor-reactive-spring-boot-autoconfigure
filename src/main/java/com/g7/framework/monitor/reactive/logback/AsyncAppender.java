@@ -246,7 +246,6 @@ public class AsyncAppender extends ContextAwareBase
                         }
                     })
                     .subscribe();
-
         }
     }
 
