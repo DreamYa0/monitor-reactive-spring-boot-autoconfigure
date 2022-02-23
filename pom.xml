@@ -90,6 +90,11 @@
             <groupId>io.projectreactor.addons</groupId>
             <artifactId>reactor-extra</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.g7.framework</groupId>
+            <artifactId>client-reactive-spring-boot-autoconfigure</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
