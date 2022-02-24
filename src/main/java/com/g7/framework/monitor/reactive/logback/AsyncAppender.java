@@ -27,7 +27,6 @@ import com.dianping.cat.Cat;
 import org.reactivestreams.Subscription;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.WorkQueueProcessor;
 
@@ -56,7 +55,6 @@ public class AsyncAppender extends ContextAwareBase
     private int backlog = 1024 * 1024;
     private boolean includeCallerData = false;
     private boolean started = false;
-    private static final Scheduler SCHEDULER = Schedulers.newParallel("async-appender-", 5);
 
     public int getBacklog() {
         return backlog;
@@ -244,7 +242,7 @@ public class AsyncAppender extends ContextAwareBase
                             logError(evt);
                         }
                     })
-                    .subscribeOn(SCHEDULER)
+                    .subscribeOn(Schedulers.parallel())
                     .subscribe();
         }
     }

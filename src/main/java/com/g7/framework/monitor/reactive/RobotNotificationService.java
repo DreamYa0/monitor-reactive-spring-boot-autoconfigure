@@ -79,7 +79,7 @@ public class RobotNotificationService {
         mono.flatMap(this::doSend)
                 .onErrorContinue((throwable, msg) ->
                         logger.error("robot send message failed, message is {}", msg, throwable))
-                .subscribeOn(Schedulers.single())
+                .subscribeOn(Schedulers.parallel())
                 .subscribe();
     }
 
