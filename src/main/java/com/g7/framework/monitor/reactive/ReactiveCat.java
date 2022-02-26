@@ -64,8 +64,8 @@ public abstract class ReactiveCat {
     private static <T> void doSupplier(MonoSink<T> sink, Message message, Supplier<T> supplier) {
         try {
             T t = supplier.get();
-            message.setStatus(Transaction.SUCCESS);
             sink.success(t);
+            message.setStatus(Transaction.SUCCESS);
         } catch (Exception e) {
             Cat.logError(e);
             sink.error(e);
