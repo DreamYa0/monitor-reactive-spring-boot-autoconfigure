@@ -238,8 +238,8 @@ public class AsyncAppender extends ContextAwareBase
             processor.onNext(evt);
             Mono.just(evt)
                     .doOnNext(event -> {
-                        if (evt.getLevel().isGreaterOrEqual(Level.ERROR)) {
-                            logError(evt);
+                        if (event.getLevel().isGreaterOrEqual(Level.ERROR)) {
+                            logError(event);
                         }
                     })
                     .subscribeOn(Schedulers.parallel())
