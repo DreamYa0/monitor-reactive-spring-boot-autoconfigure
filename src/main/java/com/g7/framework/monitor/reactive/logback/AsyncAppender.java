@@ -236,14 +236,12 @@ public class AsyncAppender extends ContextAwareBase
     private void queueLoggingEvent(ILoggingEvent evt) {
         if (null != delegate.get()) {
             processor.onNext(evt);
-            Mono.just(evt)
-                    .doOnNext(event -> {
-                        if (event.getLevel().isGreaterOrEqual(Level.ERROR)) {
-                            logError(event);
-                        }
-                    })
-                    .subscribeOn(Schedulers.parallel())
-                    .subscribe();
+            if (evt.getLevel().isGreaterOrEqual(Level.ERROR)) {
+                Mono.just(evt)
+                        .doOnNext(this::logError)
+                        .subscribeOn(Schedulers.parallel())
+                        .subscribe();
+            }
         }
     }
 
