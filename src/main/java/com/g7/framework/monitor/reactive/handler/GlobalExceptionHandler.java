@@ -109,12 +109,12 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
             sb.append("[").append(field).append("]").append(" ").append(message).append("|");
         }
         sb.deleteCharAt(sb.length() - 1);
-        return getBaseResult(false, CommonErrorCode.ILLEGAL_ARGUMENT.getCode(), sb.toString());
+        return getBaseResult(CommonErrorCode.ILLEGAL_ARGUMENT.getCode(), sb.toString());
     }
 
     @NotNull
     private BaseResult onCheckException(JSR303CheckException e) {
-        return getBaseResult(false, CommonErrorCode.ILLEGAL_ARGUMENT.getCode(), e.getMessage());
+        return getBaseResult(CommonErrorCode.ILLEGAL_ARGUMENT.getCode(), e.getMessage());
     }
 
     private BaseResult onException(Exception e) {
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
         // 兼容老项目抛出的RouteException
         CodeMeta codeMeta = buildCodeMeta(e.getMessage());
         if (Objects.nonNull(codeMeta)) {
-            result = getBaseResult(false, codeMeta.getCode(), codeMeta.getMsgZhCN());
+            result = getBaseResult(codeMeta.getCode(), codeMeta.getMsgZhCN());
         } else {
             result = getDefaultResult(e);
         }
@@ -136,9 +136,9 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
 
         Boolean isShow = e.getShow();
         if (isShow) {
-            result = getBaseResult(false, e.getErrorCode(), e.getMessage());
+            result = getBaseResult(e.getErrorCode(), e.getMessage());
         } else {
-            result = getBaseResult(false, e.getErrorCode(), "Business exception");
+            result = getBaseResult(e.getErrorCode(), "Business exception");
         }
 
         return result;
@@ -148,24 +148,19 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
         BaseResult result;
         // dubbo 调用异常
         if (rpc.isTimeout()) {
-            result = getBaseResult(false,
-                    CommonErrorCode.BUSY_SERVICE.getCode(),
+            result = getBaseResult(CommonErrorCode.BUSY_SERVICE.getCode(),
                     CommonErrorCode.BUSY_SERVICE.getMsgZhCN());
         } else if (rpc.isNetwork()) {
-            result = getBaseResult(false,
-                    CommonErrorCode.NETWORK_CONNECT_FAILED.getCode(),
+            result = getBaseResult(CommonErrorCode.NETWORK_CONNECT_FAILED.getCode(),
                     CommonErrorCode.NETWORK_CONNECT_FAILED.getMsgZhCN());
         } else if (rpc.isSerialization()) {
-            result = getBaseResult(false,
-                    CommonErrorCode.SERIALIZATION_EXCEPTION.getCode(),
+            result = getBaseResult(CommonErrorCode.SERIALIZATION_EXCEPTION.getCode(),
                     CommonErrorCode.SERIALIZATION_EXCEPTION.getMsgZhCN());
         } else if (rpc.isForbidded()) {
-            result = getBaseResult(false,
-                    CommonErrorCode.FORBIDDEN_EXCEPTION.getCode(),
+            result = getBaseResult(CommonErrorCode.FORBIDDEN_EXCEPTION.getCode(),
                     CommonErrorCode.FORBIDDEN_EXCEPTION.getMsgZhCN());
         } else {
-            result = getBaseResult(false,
-                    CommonErrorCode.RPC_CALL_EXCEPTION.getCode(),
+            result = getBaseResult(CommonErrorCode.RPC_CALL_EXCEPTION.getCode(),
                     CommonErrorCode.RPC_CALL_EXCEPTION.getMsgZhCN());
         }
         return result;
@@ -176,13 +171,12 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
         if (Objects.isNull(message)) {
             message = "java.lang.NullPointerException";
         }
-        return getBaseResult(false, CommonErrorCode.SYS_ERROR.getCode(), message);
+        return getBaseResult(CommonErrorCode.SYS_ERROR.getCode(), message);
     }
 
     private CodeMeta buildCodeMeta(String message) {
 
-        if (Boolean.FALSE.equals(StringUtils.isEmpty(message)) &&
-                message.contains("[_") && message.contains("_]")) {
+        if (StringUtils.hasText(message) && message.contains("[_") && message.contains("_]")) {
 
             int begin = message.indexOf("[_") + 2;
             int end = message.indexOf("_]");
@@ -209,9 +203,9 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
         return null;
     }
 
-    private BaseResult getBaseResult(boolean success, String code, String desc) {
+    private BaseResult getBaseResult(String code, String desc) {
         BaseResult result = new BaseResult();
-        result.setSuccess(success);
+        result.setSuccess(false);
         result.setCode(code);
         result.setDescription(desc);
         return result;
