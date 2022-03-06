@@ -17,9 +17,13 @@ import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -54,7 +58,7 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
 
     @Override
     protected int getHttpStatus(final Map<String, Object> errorAttributes) {
-        return HttpStatus.OK.value();
+        return HttpStatus.INTERNAL_SERVER_ERROR.value();
     }
 
     private Map<String, Object> response(final ServerRequest request) {
@@ -72,19 +76,40 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
 
         BaseResult result;
 
-        if (throwable instanceof JSR303CheckException) {
+        if (throwable instanceof WebExchangeBindException) {
+            // Spring 框架参数校验异常
+            result = onBindException((WebExchangeBindException) throwable);
+        } else if (throwable instanceof JSR303CheckException) {
+            // JSR303Checker 工具类校验异常
             result = onCheckException((JSR303CheckException) throwable);
         } else if (throwable instanceof BusinessException) {
+            // 业务异常
             result = onBusinessException((BusinessException) throwable);
         } else if (throwable instanceof RpcException) {
+            // Dubbo Rpc调用异常
             result = onRpcException((RpcException) throwable);
         } else if (throwable instanceof Exception) {
+            // 未知异常
             result = onException((Exception) throwable);
         } else {
+            // 未知错误
             result = getDefaultResult(throwable);
         }
 
         return result;
+    }
+
+    private BaseResult onBindException(WebExchangeBindException e) {
+        final List<ObjectError> errors = e.getAllErrors();
+        StringBuilder sb = new StringBuilder();
+        for (ObjectError error : errors) {
+            final FieldError fieldError = (FieldError) error;
+            final String field = fieldError.getField();
+            final String message = fieldError.getDefaultMessage();
+            sb.append("[").append(field).append("]").append(" ").append(message).append("|");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return getBaseResult(false, CommonErrorCode.ILLEGAL_ARGUMENT.getCode(), sb.toString());
     }
 
     @NotNull
