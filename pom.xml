@@ -119,6 +119,12 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-tools</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
