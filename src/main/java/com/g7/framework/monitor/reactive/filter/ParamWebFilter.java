@@ -37,12 +37,13 @@ public class ParamWebFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, @NotNull WebFilterChain chain) {
         final ServerHttpRequest request = exchange.getRequest();
         final HttpMethod method = request.getMethod();
-        if (Objects.isNull(method)) {
+        final String path = request.getURI().getPath();
+        if (Objects.isNull(method) || "/actuator/health".equalsIgnoreCase(path)) {
+            // 未知请求类型或健康检查接口不打印出入参记录
             return chain.filter(exchange);
         }
 
         final long start = System.currentTimeMillis();
-        final String path = request.getURI().getPath();
 
         switch (method) {
 
