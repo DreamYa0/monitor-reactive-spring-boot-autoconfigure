@@ -13,6 +13,7 @@ import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -38,7 +39,7 @@ public class ParamWebFilter implements WebFilter {
         final ServerHttpRequest request = exchange.getRequest();
         final HttpMethod method = request.getMethod();
         final String path = request.getURI().getPath();
-        if (Objects.isNull(method) || "/actuator/health".equalsIgnoreCase(path)) {
+        if (Objects.isNull(method) || (StringUtils.hasText(path) && path.contains("/actuator"))) {
             // 未知请求类型或健康检查接口不打印出入参记录
             return chain.filter(exchange);
         }
