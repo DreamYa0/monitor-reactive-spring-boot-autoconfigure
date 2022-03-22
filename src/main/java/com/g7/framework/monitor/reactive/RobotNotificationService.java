@@ -35,7 +35,7 @@ public class RobotNotificationService {
      * 发送文本消息(不带标题)
      * @param content 消息内容
      */
-    public void sendText(String content) {
+    public Mono<String> sendText(String content) {
         final Mono<String> mono = Mono.create(sink -> {
             Assert.notNull(content, "机器人告警内容不能为空");
             String msg;
@@ -49,7 +49,7 @@ public class RobotNotificationService {
             }
             sink.success(msg);
         });
-        subscribe(mono);
+        return doSend(mono);
     }
 
     /**
@@ -57,7 +57,7 @@ public class RobotNotificationService {
      * @param content 消息内容
      * @param title   标题
      */
-    public void sendText(String title, String content) {
+    public Mono<String> sendText(String title, String content) {
         final Mono<String> mono = Mono.create(sink -> {
             Assert.notNull(content, "机器人告警内容不能为空");
             String msg;
@@ -72,15 +72,17 @@ public class RobotNotificationService {
             }
             sink.success(msg);
         });
-        subscribe(mono);
+        return doSend(mono);
     }
 
-    private void subscribe(Mono<String> mono) {
-        mono.flatMap(this::doSend)
+    public void subscribe(Mono<String> mono) {
+        mono.subscribeOn(Schedulers.parallel()).subscribe();
+    }
+
+    private Mono<String> doSend(Mono<String> mono) {
+        return mono.flatMap(this::doSend)
                 .onErrorContinue((throwable, msg) ->
-                        logger.error("robot send message failed, message is {}", msg, throwable))
-                .subscribeOn(Schedulers.parallel())
-                .subscribe();
+                        logger.error("robot send message failed, message is {}", msg, throwable));
     }
 
     private Mono<String> doSend(String payload) {
