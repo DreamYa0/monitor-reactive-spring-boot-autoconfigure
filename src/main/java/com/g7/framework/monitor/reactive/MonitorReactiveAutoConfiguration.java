@@ -1,5 +1,6 @@
 package com.g7.framework.monitor.reactive;
 
+import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.g7.framework.monitor.reactive.filter.ParamWebFilter;
 import com.g7.framework.monitor.reactive.handler.GlobalExceptionHandler;
 import org.springframework.beans.factory.ObjectProvider;
@@ -15,6 +16,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @EnableWebFlux
+@EnableApolloConfig
+@EnableEurekaClient
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
