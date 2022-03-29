@@ -5,6 +5,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.dianping.cat.Cat;
+import com.g7.framework.framwork.exception.BusinessException;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -31,16 +33,25 @@ public class CatAsyncAppender extends AsyncAppender {
     private void logError(ILoggingEvent event) {
         ThrowableProxy info = (ThrowableProxy) event.getThrowableProxy();
         if (info != null) {
-            Throwable exception = info.getThrowable();
+            Throwable throwable = info.getThrowable();
+            if (throwable instanceof BusinessException) {
+                BusinessException businessException = (BusinessException) throwable;
+                final String code = businessException.getErrorCode();
+                if (StringUtils.hasText(code) && code.length() > 4) {
+                    // 业务异常不记录到CAT
+                    return;
+                }
+            }
+
             Object message = event.getFormattedMessage();
             String mdcString = "";
             if (event.getMDCPropertyMap() != null) {
                 mdcString = event.getMDCPropertyMap().toString();
             }
             if (message != null) {
-                Cat.logError(mdcString + " " + message, exception);
+                Cat.logError(mdcString + " " + message, throwable);
             } else {
-                Cat.logError(mdcString, exception);
+                Cat.logError(mdcString, throwable);
             }
         }
     }
