@@ -1,6 +1,5 @@
 package com.g7.framework.monitor.reactive.handler;
 
-import com.alibaba.dubbo.rpc.RpcException;
 import com.g7.framework.common.dto.BaseResult;
 import com.g7.framework.framwork.exception.BusinessException;
 import com.g7.framework.framwork.exception.meta.CodeMeta;
@@ -88,9 +87,6 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
         } else if (throwable instanceof BusinessException) {
             // 业务异常
             result = onBusinessException((BusinessException) throwable);
-        } else if (throwable instanceof RpcException) {
-            // Dubbo Rpc调用异常
-            result = onRpcException((RpcException) throwable);
         } else if (throwable instanceof Exception) {
             // 未知异常
             result = onException((Exception) throwable);
@@ -144,28 +140,6 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
             result = getBaseResult(e.getErrorCode(), "Business exception");
         }
 
-        return result;
-    }
-
-    private BaseResult onRpcException(RpcException rpc) {
-        BaseResult result;
-        // dubbo 调用异常
-        if (rpc.isTimeout()) {
-            result = getBaseResult(CommonErrorCode.BUSY_SERVICE.getCode(),
-                    CommonErrorCode.BUSY_SERVICE.getMsgZhCN());
-        } else if (rpc.isNetwork()) {
-            result = getBaseResult(CommonErrorCode.NETWORK_CONNECT_FAILED.getCode(),
-                    CommonErrorCode.NETWORK_CONNECT_FAILED.getMsgZhCN());
-        } else if (rpc.isSerialization()) {
-            result = getBaseResult(CommonErrorCode.SERIALIZATION_EXCEPTION.getCode(),
-                    CommonErrorCode.SERIALIZATION_EXCEPTION.getMsgZhCN());
-        } else if (rpc.isForbidded()) {
-            result = getBaseResult(CommonErrorCode.FORBIDDEN_EXCEPTION.getCode(),
-                    CommonErrorCode.FORBIDDEN_EXCEPTION.getMsgZhCN());
-        } else {
-            result = getBaseResult(CommonErrorCode.RPC_CALL_EXCEPTION.getCode(),
-                    CommonErrorCode.RPC_CALL_EXCEPTION.getMsgZhCN());
-        }
         return result;
     }
 
