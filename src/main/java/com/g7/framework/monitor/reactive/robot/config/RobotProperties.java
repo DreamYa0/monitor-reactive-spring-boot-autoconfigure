@@ -17,11 +17,6 @@ public class RobotProperties {
     private String url;
 
     /**
-     * 启用状态：true=启用,false=不启用
-     */
-    private Boolean enabled = true;
-
-    /**
      * 是否启动新版本发送消息
      */
     private Boolean openNewVersion = false;
@@ -32,14 +27,6 @@ public class RobotProperties {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Boolean getOpenNewVersion() {

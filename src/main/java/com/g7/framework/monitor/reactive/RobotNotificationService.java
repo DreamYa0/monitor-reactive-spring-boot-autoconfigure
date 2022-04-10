@@ -80,18 +80,9 @@ public class RobotNotificationService {
     }
 
     private Mono<String> doSend(Mono<String> mono) {
-        return mono.flatMap(this::doSend)
+        return mono.flatMap(payload -> reactiveRest.post(robotProperties.getUrl(), payload))
                 .onErrorContinue((throwable, msg) ->
                         logger.error("robot send message failed, message is {}", msg, throwable));
-    }
-
-    private Mono<String> doSend(String payload) {
-        if (robotProperties.getEnabled()) {
-            return reactiveRest.post(robotProperties.getUrl(), payload);
-
-        } else {
-            return Mono.empty();
-        }
     }
 
     /**
