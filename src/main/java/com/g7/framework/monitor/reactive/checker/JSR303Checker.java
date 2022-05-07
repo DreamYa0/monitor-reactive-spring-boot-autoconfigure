@@ -41,6 +41,6 @@ public class JSR303Checker {
     }
 
     public static <T> Mono<JSR303CheckException> onCheckReturn(T o) {
-        return Mono.just(checkReturn(o));
+        return Mono.justOrEmpty(checkReturn(o));
     }
 }
