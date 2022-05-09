@@ -80,18 +80,23 @@ public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
 
         if (throwable instanceof WebExchangeBindException) {
             // Spring 框架参数校验异常
+            logger.info("parameter error", throwable);
             result = onBindException((WebExchangeBindException) throwable);
         } else if (throwable instanceof JSR303CheckException) {
             // JSR303Checker 工具类校验异常
+            logger.info("parameter error", throwable);
             result = onCheckException((JSR303CheckException) throwable);
         } else if (throwable instanceof BusinessException) {
             // 业务异常
+            logger.info("business error", throwable);
             result = onBusinessException((BusinessException) throwable);
         } else if (throwable instanceof Exception) {
             // 未知异常
+            logger.error("unknown error", throwable);
             result = onException((Exception) throwable);
         } else {
             // 未知错误
+            logger.error("unknown error", throwable);
             result = getDefaultResult(throwable);
         }
 
