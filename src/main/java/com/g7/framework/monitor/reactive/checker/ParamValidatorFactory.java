@@ -16,7 +16,7 @@ public enum ParamValidatorFactory {
      * 单例
      */
     INSTANCE {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
         @Override
         public Validator getValidator() {

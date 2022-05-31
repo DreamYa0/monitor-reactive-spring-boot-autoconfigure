@@ -13,10 +13,10 @@ import java.util.Set;
  */
 public class JSR303Checker {
 
-    public static <T> Mono<T> check(T o) {
+    public static <T> Mono<T> check(T o, Class<?>... groups) {
         // 通过jsr303规范的注解来校验参数
         return Mono.create(sink -> {
-            final JSR303CheckException exception = checkReturn(o);
+            final JSR303CheckException exception = doCheck(o, groups);
             if (exception != null) {
                 sink.error(exception);
             } else {
@@ -25,9 +25,9 @@ public class JSR303Checker {
         });
     }
 
-    public static <T> JSR303CheckException checkReturn(T o) {
+    private static <T> JSR303CheckException doCheck(T o, Class<?>... groups) {
         Set<ConstraintViolation<Object>> constraintViolations = ParamValidatorFactory.INSTANCE.getValidator()
-                .validate(o);
+                .validate(o, groups);
         JSR303CheckException exception = null;
         if (constraintViolations != null && !constraintViolations.isEmpty()) {
             exception = new JSR303CheckException();
@@ -40,7 +40,7 @@ public class JSR303Checker {
         return exception;
     }
 
-    public static <T> Mono<JSR303CheckException> onCheckReturn(T o) {
-        return Mono.justOrEmpty(checkReturn(o));
+    public static <T> Mono<JSR303CheckException> checkReturn(T o, Class<?>... groups) {
+        return Mono.justOrEmpty(doCheck(o, groups));
     }
 }
