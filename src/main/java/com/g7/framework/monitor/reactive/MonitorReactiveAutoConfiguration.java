@@ -4,6 +4,7 @@ import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.g7.framework.monitor.reactive.filter.ParamWebFilter;
 import com.g7.framework.monitor.reactive.handler.GlobalExceptionHandler;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,7 +20,6 @@ import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @EnableWebFlux
 @EnableApolloConfig
 @EnableEurekaClient
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @AutoConfigureBefore(ErrorWebFluxAutoConfiguration.class)
