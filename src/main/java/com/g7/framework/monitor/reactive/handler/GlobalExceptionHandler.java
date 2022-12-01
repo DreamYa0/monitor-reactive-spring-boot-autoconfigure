@@ -5,7 +5,6 @@ import com.g7.framework.framwork.exception.BusinessException;
 import com.g7.framework.framwork.exception.meta.CodeMeta;
 import com.g7.framework.framwork.exception.meta.CommonErrorCode;
 import com.g7.framework.monitor.reactive.checker.JSR303CheckException;
-import com.g7.framwork.common.util.json.JsonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +47,6 @@ public class GlobalExceptionHandler {
         map.put("success", result.isSuccess());
         map.put("code", result.getCode());
         map.put("description", result.getDescription());
-        final String path = request.getRequestURI();
-        logger.info("{} result {}", path, JsonUtils.toJson(result));
         return map;
     }
 
