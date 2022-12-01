@@ -1,7 +1,5 @@
 package com.g7.framework.monitor.reactive.checker;
 
-import reactor.core.publisher.Mono;
-
 import javax.validation.ConstraintViolation;
 import java.util.Set;
 
@@ -13,16 +11,14 @@ import java.util.Set;
  */
 public class JSR303Checker {
 
-    public static <T> Mono<T> check(T o, Class<?>... groups) {
+    public static <T> T check(T o, Class<?>... groups) {
         // 通过jsr303规范的注解来校验参数
-        return Mono.create(sink -> {
-            final JSR303CheckException exception = doCheck(o, groups);
-            if (exception != null) {
-                sink.error(exception);
-            } else {
-                sink.success(o);
-            }
-        });
+        final JSR303CheckException exception = doCheck(o, groups);
+        if (exception != null) {
+            throw exception;
+        } else {
+            return o;
+        }
     }
 
     private static <T> JSR303CheckException doCheck(T o, Class<?>... groups) {
@@ -40,7 +36,7 @@ public class JSR303Checker {
         return exception;
     }
 
-    public static <T> Mono<JSR303CheckException> checkReturn(T o, Class<?>... groups) {
-        return Mono.justOrEmpty(doCheck(o, groups));
+    public static <T> JSR303CheckException checkReturn(T o, Class<?>... groups) {
+        return doCheck(o, groups);
     }
 }

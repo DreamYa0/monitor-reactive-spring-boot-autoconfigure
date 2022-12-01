@@ -9,19 +9,16 @@ import com.g7.framwork.common.util.json.JsonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorWebExceptionHandler;
-import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.reactive.error.ErrorAttributes;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.reactive.function.server.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,43 +30,25 @@ import java.util.Objects;
  * @date 2022/3/6 5:44 下午
  * @since 1.0.0
  */
-public class GlobalExceptionHandler extends DefaultErrorWebExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    public GlobalExceptionHandler(ErrorAttributes errorAttributes,
-                                  WebProperties.Resources resources,
-                                  ErrorProperties errorProperties,
-                                  ApplicationContext applicationContext) {
-
-        super(errorAttributes, resources, errorProperties,
-                applicationContext);
+    @ExceptionHandler({Throwable.class})
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Object> exception(Throwable throwable, HttpServletRequest request) {
+        return response(throwable, request);
     }
 
-    @Override
-    protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-        return response(request);
-    }
-
-    @Override
-    protected RouterFunction<ServerResponse> getRoutingFunction(final ErrorAttributes errorAttributes) {
-        return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
-    }
-
-    @Override
-    protected int getHttpStatus(final Map<String, Object> errorAttributes) {
-        return HttpStatus.OK.value();
-    }
-
-    private Map<String, Object> response(final ServerRequest request) {
-        Throwable throwable = getError(request);
+    private Map<String, Object> response(Throwable throwable, HttpServletRequest request) {
         final BaseResult result = onResult(throwable);
         Map<String, Object> map = new HashMap<>();
         map.put("sid", result.getSid());
         map.put("success", result.isSuccess());
         map.put("code", result.getCode());
         map.put("description", result.getDescription());
-        final String path = request.path();
+        final String path = request.getRequestURI();
         logger.info("{} result {}", path, JsonUtils.toJson(result));
         return map;
     }

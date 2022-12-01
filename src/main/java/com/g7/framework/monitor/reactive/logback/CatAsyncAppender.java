@@ -7,8 +7,6 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.dianping.cat.Cat;
 import com.g7.framework.framwork.exception.BusinessException;
 import org.springframework.util.StringUtils;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * @author dreamyao
@@ -23,10 +21,7 @@ public class CatAsyncAppender extends AsyncAppender {
         super.preprocess(eventObject);
         Level level = eventObject.getLevel();
         if (level.isGreaterOrEqual(Level.ERROR)) {
-            Mono.just(eventObject)
-                    .doOnNext(this::logError)
-                    .subscribeOn(Schedulers.parallel())
-                    .subscribe();
+            this.logError(eventObject);
         }
     }
 

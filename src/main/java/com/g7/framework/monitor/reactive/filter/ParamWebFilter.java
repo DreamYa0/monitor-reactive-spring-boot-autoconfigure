@@ -1,26 +1,17 @@
 package com.g7.framework.monitor.reactive.filter;
 
 import com.g7.framwork.common.util.json.JsonUtils;
-import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.nio.charset.StandardCharsets;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -29,86 +20,63 @@ import java.util.Objects;
  * @date 2022/3/6 5:03 下午
  * @since 1.0.0
  */
-public class ParamWebFilter implements WebFilter {
+public class ParamWebFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(ParamWebFilter.class);
 
-    @NotNull
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, @NotNull WebFilterChain chain) {
-        final ServerHttpRequest request = exchange.getRequest();
-        final HttpMethod method = request.getMethod();
-        final String path = request.getURI().getPath();
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String method = request.getMethod();
+        // 请求地址
+        String path = request.getRequestURI();
         if (Objects.isNull(method) || (StringUtils.hasText(path) && path.contains("/actuator"))) {
             // 未知请求类型或健康检查接口不打印出入参记录
-            return chain.filter(exchange);
-        }
+            filterChain.doFilter(request, response);
+        } else {
+            switch (method) {
+                case "GET":
+                    // 打印入参
+                    logger.info("{} request is {}", path, JsonUtils.toJson(request.getParameterMap()));
+                    break;
+                case "POST":
+                    logger.info("{} request is {}", path, getBodyString(request));
+            }
 
-        final long start = System.currentTimeMillis();
-
-        switch (method) {
-
-            case GET:
-
-                ServerHttpRequestDecorator requestDecorator = new ServerHttpRequestDecorator(request) {
-                    @NotNull
-                    @Override
-                    public MultiValueMap<String, String> getQueryParams() {
-                        final MultiValueMap<String, String> params = super.getQueryParams();
-                        logger.info("{} request is {}", path, JsonUtils.toJson(params.toSingleValueMap()));
-                        return params;
-                    }
-                };
-
-                return response(exchange, chain, requestDecorator, start);
-
-            case POST:
-
-                ServerHttpRequestDecorator decorator = new ServerHttpRequestDecorator(request) {
-                    @NotNull
-                    @Override
-                    public Flux<DataBuffer> getBody() {
-                        return Flux.from(DataBufferUtils.join(super.getBody())
-                                .doOnNext(dataBuffer -> {
-                                    String request = dataBuffer.toString(StandardCharsets.UTF_8);
-                                    //输出body
-                                    logger.info("{} request is {}", path, request);
-                                }));
-                    }
-                };
-
-                return response(exchange, chain, decorator, start);
-
-            default:
-                return chain.filter(exchange);
+            final long start = System.currentTimeMillis();
+            ResponseWrapper responseWrapper = new ResponseWrapper(response);
+            // 调用下游逻辑
+            filterChain.doFilter(request, responseWrapper);
+            String content = responseWrapper.getTextContent();
+            //打印返回结果
+            logger.info("{} result {} {} ms", path, content, System.currentTimeMillis() - start);
+            response.getOutputStream().write(content.getBytes());
         }
     }
 
-    private Mono<Void> response(ServerWebExchange exchange,
-                                WebFilterChain chain,
-                                ServerHttpRequestDecorator requestDecorator,
-                                long start) {
-
-        ServerHttpResponse originalResponse = exchange.getResponse();
-        ServerHttpRequest request = exchange.getRequest();
-        final String path = request.getURI().getPath();
-        ServerHttpResponseDecorator responseDecorator = new ServerHttpResponseDecorator(originalResponse) {
-            @NotNull
-            @Override
-            public Mono<Void> writeWith(@NotNull Publisher<? extends DataBuffer> body) {
-                //输出返回结果
-                return super.writeWith(DataBufferUtils.join(body)
-                        .doOnNext(dataBuffer -> {
-                            String result = dataBuffer.toString(StandardCharsets.UTF_8);
-                            //打印返回结果
-                            logger.info("{} result {} {} ms", path, result, System.currentTimeMillis() - start);
-                        }));
+    private String getBodyString(HttpServletRequest request) {
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            br = request.getReader();
+            String str;
+            while ((str = br.readLine()) != null) {
+                sb.append(str);
             }
-        };
-
-        return chain.filter(exchange.mutate()
-                .request(requestDecorator)
-                .response(responseDecorator)
-                .build());
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != br) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sb.toString();
     }
 }

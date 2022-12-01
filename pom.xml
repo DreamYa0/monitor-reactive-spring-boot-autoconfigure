@@ -7,14 +7,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.0</version>
+        <version>2.6.14</version>
     </parent>
 
     <groupId>com.g7.framework</groupId>
-    <artifactId>monitor-reactive-spring-boot-autoconfigure</artifactId>
+    <artifactId>monitor-spring-boot-autoconfigure</artifactId>
     <version>1.1.0-SNAPSHOT</version>
 
-    <name>monitor-reactive-spring-boot-autoconfigure</name>
+    <name>monitor-spring-boot-autoconfigure</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -76,26 +76,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>io.projectreactor.addons</groupId>
-            <artifactId>reactor-extra</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor.kotlin</groupId>
-            <artifactId>reactor-kotlin-extensions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-tools</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.g7.framework</groupId>
-            <artifactId>client-reactive-spring-boot-autoconfigure</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.g7.framework</groupId>
