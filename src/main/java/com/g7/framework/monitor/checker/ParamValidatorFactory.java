@@ -1,4 +1,4 @@
-package com.g7.framework.monitor.reactive.checker;
+package com.g7.framework.monitor.checker;
 
 import javax.validation.Validation;
 import javax.validation.Validator;

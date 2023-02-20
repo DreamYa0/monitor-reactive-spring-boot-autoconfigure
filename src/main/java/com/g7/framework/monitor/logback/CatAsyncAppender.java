@@ -1,4 +1,4 @@
-package com.g7.framework.monitor.reactive.logback;
+package com.g7.framework.monitor.logback;
 
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.Level;

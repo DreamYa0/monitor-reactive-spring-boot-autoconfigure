@@ -1,8 +1,8 @@
-package com.g7.framework.monitor.reactive;
+package com.g7.framework.monitor;
 
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
-import com.g7.framework.monitor.reactive.filter.ParamWebFilter;
-import com.g7.framework.monitor.reactive.handler.GlobalExceptionHandler;
+import com.g7.framework.monitor.filter.ParamWebFilter;
+import com.g7.framework.monitor.handler.GlobalExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;

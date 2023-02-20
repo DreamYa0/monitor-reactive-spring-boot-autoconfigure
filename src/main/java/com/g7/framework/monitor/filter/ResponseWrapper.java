@@ -1,4 +1,4 @@
-package com.g7.framework.monitor.reactive.filter;
+package com.g7.framework.monitor.filter;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
