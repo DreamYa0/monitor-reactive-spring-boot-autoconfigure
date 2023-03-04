@@ -12,10 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.support.WebExchangeBindException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -54,10 +54,10 @@ public class GlobalExceptionHandler {
 
         BaseResult result;
 
-        if (throwable instanceof WebExchangeBindException) {
+        if (throwable instanceof MethodArgumentNotValidException) {
             // Spring 框架参数校验异常
             logger.info("parameter error", throwable);
-            result = onBindException((WebExchangeBindException) throwable);
+            result = onBindException((MethodArgumentNotValidException) throwable);
         } else if (throwable instanceof JSR303CheckException) {
             // JSR303Checker 工具类校验异常
             logger.info("parameter error", throwable);
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
         return result;
     }
 
-    private BaseResult onBindException(WebExchangeBindException e) {
+    private BaseResult onBindException(MethodArgumentNotValidException e) {
         final List<ObjectError> errors = e.getAllErrors();
         StringBuilder sb = new StringBuilder();
         for (ObjectError error : errors) {
