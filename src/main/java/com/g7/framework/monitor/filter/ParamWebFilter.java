@@ -1,6 +1,5 @@
 package com.g7.framework.monitor.filter;
 
-import com.g7.framwork.common.util.json.JsonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +49,11 @@ public class ParamWebFilter extends OncePerRequestFilter {
             switch (method) {
                 case "GET":
                     // 打印入参
-                    logger.info("{} request is {}", path, JsonUtils.toJson(request.getParameterMap()));
+                    logger.info("{} request is {}", path, request.getQueryString());
                     break;
                 case "POST":
                     logger.info("{} request is {}", path, new String(requestWrapper.getContentAsByteArray()));
+                    break;
             }
 
             //打印返回结果
