@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Objects;
 
 /**
@@ -49,7 +50,9 @@ public class ParamWebFilter extends OncePerRequestFilter {
             switch (method) {
                 case "GET":
                     // 打印入参
-                    logger.info("{} request is {}", path, request.getQueryString());
+                    String queryString = request.getQueryString();
+                    logger.info("{} request is {}", path, StringUtils.hasText(queryString) ?
+                            URLDecoder.decode(queryString, "UTF-8") : null);
                     break;
                 case "POST":
                     logger.info("{} request is {}", path, new String(requestWrapper.getContentAsByteArray()));
