@@ -39,18 +39,17 @@ public class ParamWebFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
 
-            ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
-
             final long start = System.currentTimeMillis();
-            // 调用下游逻辑
-            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
+            ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
+            // 调用下游逻辑
             filterChain.doFilter(requestWrapper, responseWrapper);
 
             switch (method) {
                 case "GET":
                     // 打印入参
-                    String queryString = request.getQueryString();
+                    String queryString = requestWrapper.getQueryString();
                     logger.info("{} request is {}", path, StringUtils.hasText(queryString) ?
                             URLDecoder.decode(queryString, "UTF-8") : null);
                     break;
@@ -60,9 +59,9 @@ public class ParamWebFilter extends OncePerRequestFilter {
             }
 
             //打印返回结果
-            byte[] content = responseWrapper.getContentAsByteArray();
-            logger.info("{} result {} {} ms", path, new String(content), System.currentTimeMillis() - start);
-            response.getOutputStream().write(content);
+            logger.info("{} result {} {} ms", path, new String(responseWrapper.getContentAsByteArray()),
+                    System.currentTimeMillis() - start);
+            responseWrapper.copyBodyToResponse();
         }
     }
 }
