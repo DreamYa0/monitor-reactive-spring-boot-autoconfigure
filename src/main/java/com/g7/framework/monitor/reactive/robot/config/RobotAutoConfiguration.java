@@ -2,16 +2,16 @@ package com.g7.framework.monitor.reactive.robot.config;
 
 import com.g7.framework.monitor.reactive.RobotNotificationService;
 import com.g7.framework.reactive.common.util.http.ReactiveRest;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author dreamyao
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties({RobotProperties.class})
 public class RobotAutoConfiguration {
 
