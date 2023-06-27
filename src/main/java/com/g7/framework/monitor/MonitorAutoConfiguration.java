@@ -3,9 +3,12 @@ package com.g7.framework.monitor;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.g7.framework.monitor.filter.ParamWebFilter;
 import com.g7.framework.monitor.handler.GlobalExceptionHandler;
+import com.g7.framework.monitor.listener.ShutdownHookListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
@@ -36,4 +39,11 @@ public class MonitorAutoConfiguration {
     public ParamWebFilter paramWebFilter() {
         return new ParamWebFilter();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ShutdownHookListener shutdownHookListener(@Autowired EurekaAutoServiceRegistration registration) {
+        return new ShutdownHookListener(registration);
+    }
+
 }
