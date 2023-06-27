@@ -12,13 +12,13 @@ import org.springframework.context.event.ContextClosedEvent;
  * @date 2023/6/27 15:09
  * @since 1.0.0
  */
-public class ShutdownHookListener implements ApplicationListener<ContextClosedEvent> {
+public class EurekaShutdownHookListener implements ApplicationListener<ContextClosedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ShutdownHookListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(EurekaShutdownHookListener.class);
 
     private final EurekaAutoServiceRegistration eurekaAutoServiceRegistration;
 
-    public ShutdownHookListener(EurekaAutoServiceRegistration eurekaAutoServiceRegistration) {
+    public EurekaShutdownHookListener(EurekaAutoServiceRegistration eurekaAutoServiceRegistration) {
         this.eurekaAutoServiceRegistration = eurekaAutoServiceRegistration;
     }
 

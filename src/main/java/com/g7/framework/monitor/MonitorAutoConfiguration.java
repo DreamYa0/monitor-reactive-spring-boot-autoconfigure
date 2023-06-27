@@ -3,7 +3,7 @@ package com.g7.framework.monitor;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.g7.framework.monitor.filter.ParamWebFilter;
 import com.g7.framework.monitor.handler.GlobalExceptionHandler;
-import com.g7.framework.monitor.listener.ShutdownHookListener;
+import com.g7.framework.monitor.listener.EurekaShutdownHookListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -42,8 +42,8 @@ public class MonitorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ShutdownHookListener shutdownHookListener(@Autowired EurekaAutoServiceRegistration registration) {
-        return new ShutdownHookListener(registration);
+    public EurekaShutdownHookListener shutdownHookListener(@Autowired EurekaAutoServiceRegistration registration) {
+        return new EurekaShutdownHookListener(registration);
     }
 
 }
