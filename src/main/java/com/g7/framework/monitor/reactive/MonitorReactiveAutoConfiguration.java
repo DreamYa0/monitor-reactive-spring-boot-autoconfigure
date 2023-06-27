@@ -3,7 +3,9 @@ package com.g7.framework.monitor.reactive;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.g7.framework.monitor.reactive.filter.ParamWebFilter;
 import com.g7.framework.monitor.reactive.handler.GlobalExceptionHandler;
+import com.g7.framework.monitor.reactive.listener.EurekaShutdownHookListener;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,6 +20,7 @@ import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -81,5 +84,11 @@ public class MonitorReactiveAutoConfiguration implements WebFluxConfigurer{
     @ConditionalOnMissingBean
     public ParamWebFilter paramWebFilter() {
         return new ParamWebFilter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EurekaShutdownHookListener shutdownHookListener(@Autowired EurekaAutoServiceRegistration registration) {
+        return new EurekaShutdownHookListener(registration);
     }
 }
